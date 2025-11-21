@@ -1,3 +1,11 @@
+<?php 
+require_once $_SERVER['DOCUMENT_ROOT'] . '/auth/middleware.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/auth/auth.php';
+
+// Halaman khusus owner
+role_required('owner');
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 
