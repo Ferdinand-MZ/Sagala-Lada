@@ -1,11 +1,3 @@
-<?php 
-require_once $_SERVER['DOCUMENT_ROOT'] . '/auth/middleware.php';
-require_once $_SERVER['DOCUMENT_ROOT'] . '/auth/auth.php';
-
-role_required(['admin']);
-?>
-
-
 <!DOCTYPE html>
 <html lang="en">
 
@@ -15,7 +7,7 @@ role_required(['admin']);
   <link rel="apple-touch-icon" sizes="76x76" href="/assets/template/material/assets/img/apple-icon.png">
   <link rel="icon" type="image/png" href="/assets/template/material/assets/img/favicon.png">
   <title>
-    Daftar Transaksi
+    Daftar Pengguna
   </title>
   <!--     Fonts and icons     -->
   <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Inter:300,400,500,600,700,900" />
@@ -32,7 +24,7 @@ role_required(['admin']);
 
 <body class="g-sidenav-show  bg-gray-100">
   
-  <?php $page = 'transaksi'; ?>
+  <?php $page = 'pengguna'; ?>
   <?php include $_SERVER['DOCUMENT_ROOT'] . '/components/sidebar.php'; ?>
   <?php include $_SERVER['DOCUMENT_ROOT'] . '/koneksi.php'; ?>
 
@@ -44,12 +36,12 @@ role_required(['admin']);
         <nav aria-label="breadcrumb">
           <ol class="breadcrumb bg-transparent mb-0 pb-0 pt-1 px-0 me-sm-6 me-5">
             <li class="breadcrumb-item text-sm"><a class="opacity-5 text-dark" href="javascript:;">Halaman</a></li>
-            <li class="breadcrumb-item text-sm text-dark active" aria-current="page">Transaksi</li>
+            <li class="breadcrumb-item text-sm text-dark active" aria-current="page">Pengguna</li>
           </ol>
         </nav>
 
         <div class="ms-md-auto pe-md-3 d-flex align-items-center">
-          <a href="transaksi_tambah.php" class="btn bg-gradient-primary btn-sm mb-0">+ Tambah Transaksi</a>
+          <a href="/server/view/pengguna/pengguna_tambah.php" class="btn bg-gradient-primary btn-sm mb-0">+ Tambah Pengguna</a>
         </div>
       </div>
     </nav>
@@ -60,7 +52,7 @@ role_required(['admin']);
       <div class="card my-4">
         <div class="card-header p-0 position-relative mt-n4 mx-3 z-index-2">
           <div class="bg-gradient-dark shadow-dark border-radius-lg pt-4 pb-3">
-            <h6 class="text-white text-capitalize ps-3">Daftar Transaksi Selesai</h6>
+            <h6 class="text-white text-capitalize ps-3">Daftar Pengguna</h6>
           </div>
         </div>
 
@@ -70,57 +62,46 @@ role_required(['admin']);
               <thead>
                 <tr>
                   <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">No</th>
-                  <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">ID Transaksi</th>
+                  <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Username</th>
+                  <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Role</th>
                   <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Tanggal</th>
-                  <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Pelanggan</th>
-                  <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Meja</th>
-                  <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Total Bayar</th>
-                  <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Metode</th>
                   <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Aksi</th>
                 </tr>
               </thead>
               <tbody>
-                <?php
-                $no = 1;
-                $sql = "SELECT p.*, py.metode_bayar, py.tanggal_bayar, py.jumlah_bayar
-                        FROM pesanan p
-                        JOIN pembayaran py ON p.id_pesanan = py.id_pesanan
-                        WHERE p.status = 'Selesai'
-                        ORDER BY py.tanggal_bayar DESC";
-                $query = mysqli_query($koneksi, $sql);
+  <?php
+  $no = 1;
+  $sql = "SELECT * FROM user ORDER BY created_at DESC";
+  $query = mysqli_query($koneksi, $sql);
 
-                if (mysqli_num_rows($query) == 0) : ?>
-                  <tr>
-                    <td colspan="8" class="text-center py-4 text-secondary">Belum ada transaksi selesai</td>
-                  </tr>
-                <?php else :
-                  while ($t = mysqli_fetch_array($query)) : ?>
-                  <tr>
-                    <td class="ps-4"><span class="text-secondary text-xs font-weight-bold"><?= $no++; ?></span></td>
-                    <td><span class="text-xs font-weight-bold">#<?= str_pad($t['id_pesanan'], 4, '0', STR_PAD_LEFT); ?></span></td>
-                    <td><span class="text-xs"><?= date('d/m/Y H:i', strtotime($t['tanggal_bayar'])); ?></span></td>
-                    <td><h6 class="mb-0 text-sm"><?= htmlspecialchars($t['nama_pelanggan']); ?></h6></td>
-                    <td><span class="text-secondary text-xs"><?= $t['no_meja'] ?: '-'; ?></span></td>
-                    <td><span class="text-success font-weight-bold">Rp <?= number_format($t['total'], 0, ',', '.'); ?></span></td>
-                    <td>
-                      <span class="badge badge-sm 
-                        <?= $t['metode_bayar']=='Cash' ? 'bg-gradient-success' : 
-                           ($t['metode_bayar']=='Transfer' ? 'bg-gradient-info' : 'bg-gradient-warning'); ?>">
-                        <?= $t['metode_bayar']; ?>
-                      </span>
-                    </td>
-                    <td class="align-middle text-center">
-                      <a href="detail_pesanan.php?id=<?= $t['id_pesanan']; ?>" class="text-info" title="Lihat Detail">
-                        <i class="material-symbols-rounded">visibility</i>
-                      </a>
-                      <a href="cetak_nota.php?id=<?= $t['id_pesanan']; ?>" target="_blank" class="text-primary ms-2" title="Cetak Nota">
-                        <i class="material-symbols-rounded">print</i>
-                      </a>
-                    </td>
-                  </tr>
-                  <?php endwhile; ?>
-                <?php endif; ?>
-              </tbody>
+  if (mysqli_num_rows($query) == 0) : ?>
+    <tr>
+      <td colspan="5" class="text-center py-4 text-secondary">Belum ada pengguna</td>
+    </tr>
+  <?php else :
+    while ($u = mysqli_fetch_array($query)) : ?>
+      <tr>
+        <td class="ps-4"><span class="text-xs"><?= $no++ ?></span></td>
+        <td><span class="text-xs font-weight-bold"><?= htmlspecialchars($u['username']) ?></span></td>
+        <td><span class="badge badge-sm <?= $u['role']=='owner' ? 'bg-gradient-warning' : 'bg-gradient-info' ?>">
+          <?= ucfirst($u['role']) ?></span></td>
+        <td><span class="text-xs"><?= date('d-m-Y H:i', strtotime($u['created_at'])) ?></span></td>
+        <td class="text-center">
+          <a href="pengguna_edit.php?id=<?= $u['id_user'] ?>" class="text-warning mx-1">
+            <i class="material-symbols-rounded">edit</i>
+          </a>
+          <?php if($u['role'] != 'owner'): ?>
+          <a href="/server/view/pengguna/pengguna_hapus.php?id=<?= $u['id_user'] ?>"
+            onclick="return confirm('Yakin hapus <?= htmlspecialchars($u['username']) ?>?')"
+            class="text-danger mx-1">
+            <i class="material-symbols-rounded">delete</i>
+          </a>
+          <?php endif; ?>
+        </td>
+      </tr>
+    <?php endwhile; ?>
+  <?php endif; ?>
+</tbody>
             </table>
           </div>
         </div>
@@ -128,81 +109,9 @@ role_required(['admin']);
     </div>
   </div>
 </div>
+
+
   </main>
-  <div class="fixed-plugin">
-    <a class="fixed-plugin-button text-dark position-fixed px-3 py-2">
-      <i class="material-symbols-rounded py-2">settings</i>
-    </a>
-    <div class="card shadow-lg">
-      <div class="card-header pb-0 pt-3">
-        <div class="float-start">
-          <h5 class="mt-3 mb-0">Material UI Configurator</h5>
-          <p>See our dashboard options.</p>
-        </div>
-        <div class="float-end mt-4">
-          <button class="btn btn-link text-dark p-0 fixed-plugin-close-button">
-            <i class="material-symbols-rounded">clear</i>
-          </button>
-        </div>
-        <!-- End Toggle Button -->
-      </div>
-      <hr class="horizontal dark my-1">
-      <div class="card-body pt-sm-3 pt-0">
-        <!-- Sidebar Backgrounds -->
-        <div>
-          <h6 class="mb-0">Sidebar Colors</h6>
-        </div>
-        <a href="javascript:void(0)" class="switch-trigger background-color">
-          <div class="badge-colors my-2 text-start">
-            <span class="badge filter bg-gradient-primary" data-color="primary" onclick="sidebarColor(this)"></span>
-            <span class="badge filter bg-gradient-dark active" data-color="dark" onclick="sidebarColor(this)"></span>
-            <span class="badge filter bg-gradient-info" data-color="info" onclick="sidebarColor(this)"></span>
-            <span class="badge filter bg-gradient-success" data-color="success" onclick="sidebarColor(this)"></span>
-            <span class="badge filter bg-gradient-warning" data-color="warning" onclick="sidebarColor(this)"></span>
-            <span class="badge filter bg-gradient-danger" data-color="danger" onclick="sidebarColor(this)"></span>
-          </div>
-        </a>
-        <!-- Sidenav Type -->
-        <div class="mt-3">
-          <h6 class="mb-0">Sidenav Type</h6>
-          <p class="text-sm">Choose between different sidenav types.</p>
-        </div>
-        <div class="d-flex">
-          <button class="btn bg-gradient-dark px-3 mb-2" data-class="bg-gradient-dark" onclick="sidebarType(this)">Dark</button>
-          <button class="btn bg-gradient-dark px-3 mb-2 ms-2" data-class="bg-transparent" onclick="sidebarType(this)">Transparent</button>
-          <button class="btn bg-gradient-dark px-3 mb-2  active ms-2" data-class="bg-white" onclick="sidebarType(this)">White</button>
-        </div>
-        <p class="text-sm d-xl-none d-block mt-2">You can change the sidenav type just on desktop view.</p>
-        <!-- Navbar Fixed -->
-        <div class="mt-3 d-flex">
-          <h6 class="mb-0">Navbar Fixed</h6>
-          <div class="form-check form-switch ps-0 ms-auto my-auto">
-            <input class="form-check-input mt-1 ms-auto" type="checkbox" id="navbarFixed" onclick="navbarFixed(this)">
-          </div>
-        </div>
-        <hr class="horizontal dark my-3">
-        <div class="mt-2 d-flex">
-          <h6 class="mb-0">Light / Dark</h6>
-          <div class="form-check form-switch ps-0 ms-auto my-auto">
-            <input class="form-check-input mt-1 ms-auto" type="checkbox" id="dark-version" onclick="darkMode(this)">
-          </div>
-        </div>
-        <hr class="horizontal dark my-sm-4">
-        <a class="btn bg-gradient-info w-100" href="https://www.creative-tim.com/product/material-dashboard-pro">Free Download</a>
-        <a class="btn btn-outline-dark w-100" href="https://www.creative-tim.com/learning-lab/bootstrap/overview/material-dashboard">View documentation</a>
-        <div class="w-100 text-center">
-          <a class="github-button" href="https://github.com/creativetimofficial/material-dashboard" data-icon="octicon-star" data-size="large" data-show-count="true" aria-label="Star creativetimofficial/material-dashboard on GitHub">Star</a>
-          <h6 class="mt-3">Thank you for sharing!</h6>
-          <a href="https://twitter.com/intent/tweet?text=Check%20Material%20UI%20Dashboard%20made%20by%20%40CreativeTim%20%23webdesign%20%23dashboard%20%23bootstrap5&amp;url=https%3A%2F%2Fwww.creative-tim.com%2Fproduct%2Fsoft-ui-dashboard" class="btn btn-dark mb-0 me-2" target="_blank">
-            <i class="fab fa-twitter me-1" aria-hidden="true"></i> Tweet
-          </a>
-          <a href="https://www.facebook.com/sharer/sharer.php?u=https://www.creative-tim.com/product/material-dashboard" class="btn btn-dark mb-0 me-2" target="_blank">
-            <i class="fab fa-facebook-square me-1" aria-hidden="true"></i> Share
-          </a>
-        </div>
-      </div>
-    </div>
-  </div>
   <!--   Core JS Files   -->
   <script src="/assets/template/material/assets/js/core/popper.min.js"></script>
   <script src="/assets/template/material/assets/js/core/bootstrap.min.js"></script>

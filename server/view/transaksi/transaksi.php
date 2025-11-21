@@ -144,7 +144,7 @@ function showDetail(id) {
   <a href="javascript:;" class="text-info me-3" title="Lihat Detail" onclick="showDetail(<?= $t['id_pesanan']; ?>)">
     <i class="material-symbols-rounded">visibility</i>
   </a>
-  <a href="cetak_nota.php?id=<?= $t['id_pesanan']; ?>" target="_blank" class="text-primary" title="Cetak Nota">
+  <a href="transaksi_cetak.php?id=<?= $t['id_pesanan']; ?>" target="_blank" class="text-primary" title="Cetak Nota">
     <i class="material-symbols-rounded">print</i>
   </a>
 </td>
