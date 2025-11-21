@@ -55,9 +55,11 @@
                     $stmt->fetch();
 
                     if (password_verify($password, $hash)) {
+                        session_regenerate_id(true);
                         $_SESSION['user_id']   = $id;
                         $_SESSION['username']  = $user;
                         $_SESSION['role']      = $role;
+                        $_SESSION['logged_in'] = true;
                         header("Location: /server/view/dashboard/dashboard.php");
                         exit;
                     } else $error = 'Username atau password salah!';
@@ -79,7 +81,7 @@
                 <label>Password</label>
                 <div class="input-wrapper">
                     <input type="password" name="password" id="password" required>
-                    <span class="toggle-password" onclick="togglePassword()">Show</span>
+                    
                 </div>
             </div>
 

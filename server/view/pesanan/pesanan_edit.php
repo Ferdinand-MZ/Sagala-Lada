@@ -1,3 +1,11 @@
+<?php 
+require_once $_SERVER['DOCUMENT_ROOT'] . '/auth/middleware.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/auth/auth.php';
+
+role_required(['admin']);
+?>
+
+
 <?php
 session_start();
 require_once $_SERVER['DOCUMENT_ROOT'] . '/koneksi.php';
