@@ -63,7 +63,6 @@
                             <a href="#" class="nav-link dropdown-toggle active" data-bs-toggle="dropdown">Pages</a>
                             <div class="dropdown-menu m-0">
                                 <a href="booking.php" class="dropdown-item active">Booking</a>
-                                <a href="team.php" class="dropdown-item">Our Team</a>
                                 <a href="testimonial.php" class="dropdown-item">Testimonial</a>
                             </div>
                         </div>

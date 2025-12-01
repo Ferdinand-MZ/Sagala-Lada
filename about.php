@@ -59,14 +59,13 @@
                         <a href="about.php" class="nav-item nav-link active">About</a>
                         <a href="service.php" class="nav-item nav-link">Service</a>
                         <a href="menu.php" class="nav-item nav-link">Menu</a>
-                        <div class="nav-item dropdown">
+                        <!-- <div class="nav-item dropdown">
                             <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Pages</a>
                             <div class="dropdown-menu m-0">
                                 <a href="booking.php" class="dropdown-item">Booking</a>
-                                <a href="team.php" class="dropdown-item">Our Team</a>
                                 <a href="testimonial.php" class="dropdown-item">Testimonial</a>
                             </div>
-                        </div>
+                        </div> -->
                         <a href="contact.html" class="nav-item nav-link">Contact</a>
                     </div>
                     <a href="" class="btn btn-primary py-2 px-4">Book A Table</a>

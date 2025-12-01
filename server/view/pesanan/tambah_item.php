@@ -25,6 +25,7 @@ if (!$pesanan || $pesanan['status'] != 'Pending') {
   <script src="https://kit.fontawesome.com/42d5adcbca.js" crossorigin="anonymous"></script>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded" />
   <link id="pagestyle" href="/assets/template/material/assets/css/material-dashboard.css?v=3.2.0" rel="stylesheet" />
+  <script src="https://app.sandbox.midtrans.com/snap/snap.js" data-client-key="SB-Mid-client-xxxxxxxxxxxxxxxx"></script>
 </head>
 <body class="g-sidenav-show bg-gray-100">
   <?php $page = 'pesanan'; ?>
@@ -107,58 +108,92 @@ if (!$pesanan || $pesanan['status'] != 'Pending') {
           </div>
 
           <div class="text-end mt-4">
-            <button class="btn btn-danger me-2" onclick="if(confirm('Batalkan pesanan ini?')) location.href='/server/controller/pesanan/pesananController.php?batal=<?= $id_pesanan ?>'">
-              Batalkan Pesanan
-            </button>
-            <?php if ($pesanan['total'] > 0): ?>
-            <button class="btn btn-success btn-lg" data-bs-toggle="modal" data-bs-target="#bayarModal">
-              Bayar Sekarang
-            </button>
-            <?php endif; ?>
+  <button class="btn btn-danger me-2" onclick="if(confirm('Batalkan pesanan ini?')) location.href='/server/controller/pesanan/pesananController.php?batal=<?= $id_pesanan ?>'">
+    Batalkan Pesanan
+  </button>
+  <?php if ($pesanan['total'] > 0): ?>
+  <button class="btn btn-success btn-lg" data-bs-toggle="modal" data-bs-target="#bayarModal">
+    Bayar Sekarang
+  </button>
+  <?php endif; ?>
+</div>
+</div>
+</div>
+
+<!-- Modal Bayar (diperbarui) -->
+<div class="modal fade" id="bayarModal" tabindex="-1">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Proses Pembayaran</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <h4>Total: Rp <?= number_format($pesanan['total'],0,',','.'); ?></h4>
+
+        <div class="row mt-4">
+          <div class="col-md-6">
+            <div class="card h-100 border-primary cursor-pointer" onclick="pilihMetode('manual')">
+              <div class="card-body text-center">
+                <i class="fas fa-money-bill-wave fa-3x text-primary"></i>
+                <h5 class="mt-3">Cash / Transfer / E-Wallet</h5>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="card h-100 border-success cursor-pointer" onclick="pilihMetode('qris')">
+              <div class="card-body text-center">
+                <i class="fas fa-qrcode fa-3x text-success"></i>
+                <h5 class="mt-3">Bayar dengan QRIS (Midtrans)</h5>
+              </div>
+            </div>
           </div>
         </div>
-      </div>
-    </div>
-  </main>
 
-  <!-- Modal Bayar -->
-  <div class="modal fade" id="bayarModal" tabindex="-1">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <form action="/server/controller/pesanan/pesananController.php" method="POST">
-          <div class="modal-header">
-            <h5 class="modal-title">Proses Pembayaran</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-          </div>
-          <div class="modal-body">
+        <!-- Form Manual -->
+        <div id="formManual" style="display:none;">
+          <form action="/server/controller/pesanan/pesananController.php" method="POST">
             <input type="hidden" name="id_pesanan" value="<?= $id_pesanan ?>">
             <input type="hidden" name="proses_bayar" value="1">
-            <h4>Total: Rp <?= number_format($pesanan['total'],0,',','.'); ?></h4>
-            <div class="mt-3">
-              <label>Metode Bayar</label>
-              <select name="metode_bayar" class="form-control" required>
-                <option value="Cash">Cash</option>
-                <option value="Transfer">Transfer</option>
-                <option value="E-Wallet">E-Wallet</option>
-              </select>
-            </div>
+            <input type="hidden" name="metode_bayar" value="Cash">
             <div class="mt-3">
               <label>Jumlah Bayar</label>
               <input type="text" name="jumlah_bayar" class="form-control rupiah" value="<?= number_format($pesanan['total'],0,',','.'); ?>" required>
             </div>
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-            <button type="submit" class="btn btn-success">Selesaikan Pembayaran</button>
-          </div>
-        </form>
+            <div class="mt-3 text-end">
+              <button type="submit" class="btn btn-primary">Selesaikan Pembayaran</button>
+            </div>
+          </form>
+        </div>
+
+        <!-- Form QRIS Midtrans -->
+        <div id="formQRIS" style="display:none;">
+          <form action="/server/controller/pesanan/midtrans_snap.php" method="POST">
+            <input type="hidden" name="id_pesanan" value="<?= $id_pesanan ?>">
+            <input type="hidden" name="total" value="<?= $pesanan['total'] ?>">
+            <input type="hidden" name="nama_pelanggan" value="<?= htmlspecialchars($pesanan['nama_pelanggan']) ?>">
+            <div class="text-center">
+              <button type="submit" class="btn btn-success btn-lg">
+                <i class="fas fa-qrcode"></i> Generate QRIS
+              </button>
+            </div>
+          </form>
+        </div>
       </div>
     </div>
   </div>
+</div>
 
   <?php include $_SERVER['DOCUMENT_ROOT'] . '/components/fixed-plugin.php'; ?>
   <script src="/assets/template/material/assets/js/core/popper.min.js"></script>
   <script src="/assets/template/material/assets/js/core/bootstrap.min.js"></script>
   <script src="/assets/template/material/assets/js/material-dashboard.min.js?v=3.2.0"></script>
+  <script>
+function pilihMetode(metode) {
+  document.getElementById('formManual').style.display = 'none';
+  document.getElementById('formQRIS').style.display = 'none';
+  document.getElementById('form'+(metode==='qris'?'QRIS':'Manual')).style.display = 'block';
+}
+</script>
 </body>
 </html>
