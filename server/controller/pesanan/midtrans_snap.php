@@ -1,5 +1,19 @@
 <?php
 session_start();
+
+// Simple .env loader (works without Composer)
+if (file_exists($_SERVER['DOCUMENT_ROOT'] . '/.env')) {
+    foreach (file($_SERVER['DOCUMENT_ROOT'] . '/.env', FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES) as $line) {
+        if (strpos(trim($line), '#') === 0) continue;
+        if (strpos($line, '=') !== false) {
+            [$key, $value] = explode('=', $line, 2);
+            putenv(trim($key) . '=' . trim($value));
+            $_ENV[trim($key)] = trim($value);
+        }
+    }
+}
+
+
 require_once $_SERVER['DOCUMENT_ROOT'].'/vendor/autoload.php';
 require_once $_SERVER['DOCUMENT_ROOT'].'/koneksi.php';
 
