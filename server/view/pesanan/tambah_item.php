@@ -22,6 +22,14 @@ if (!$pesanan || $pesanan['status'] != 'Pending') {
   <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Inter:300,400,500,600,700,900" />
   <link href="/assets/template/material/assets/css/nucleo-icons.css" rel="stylesheet" />
   <link href="/assets/template/material/assets/css/nucleo-svg.css" rel="stylesheet" />
+  <style>
+.cursor-pointer { cursor: pointer; transition: all 0.2s; }
+.hover-lift:hover { transform: translateY(-4px); }
+.icon-circle {
+  width: 70px; height: 70px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+}
+.border-3 { border-width: 3px !important; }
+</style>
   <script src="https://kit.fontawesome.com/42d5adcbca.js" crossorigin="anonymous"></script>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded" />
   <link id="pagestyle" href="/assets/template/material/assets/css/material-dashboard.css?v=3.2.0" rel="stylesheet" />
@@ -121,68 +129,142 @@ if (!$pesanan || $pesanan['status'] != 'Pending') {
 </div>
 
 <!-- Modal Bayar (diperbarui) -->
-<div class="modal fade" id="bayarModal" tabindex="-1">
+<!-- Modal Bayar - Versi Rapi & Profesional -->
+<div class="modal fade" id="bayarModal" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog modal-lg">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title">Proses Pembayaran</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+    <div class="modal-content border-0 shadow-lg">
+      <div class="modal-header border-0 pb-0">
+        <h4 class="modal-title fw-bold text-dark">
+          Pembayaran Pesanan #<?= str_pad($id_pesanan, 4, '0', STR_PAD_LEFT) ?>
+        </h4>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
-      <div class="modal-body">
-        <h4>Total: Rp <?= number_format($pesanan['total'],0,',','.'); ?></h4>
 
-        <div class="row mt-4">
+      <div class="modal-body pt-3">
+        <!-- Total Tagihan -->
+        <div class="text-center mb-4">
+          <p class="text-muted mb-1">Total Tagihan</p>
+          <h2 class="fw-bold text-primary">Rp <?= number_format($pesanan['total'], 0, ',', '.'); ?></h2>
+          <small class="text-muted"><?= htmlspecialchars($pesanan['nama_pelanggan']) ?> 
+            <?= $pesanan['no_meja'] ? " • Meja {$pesanan['no_meja']}" : '' ?>
+          </small>
+        </div>
+
+        <hr class="my-4">
+
+        <!-- Pilih Metode Pembayaran -->
+        <p class="text-center text-muted mb-4 fw-500">Pilih metode pembayaran</p>
+
+        <div class="row g-4">
+          <!-- Manual (Cash/Transfer/E-Wallet) -->
           <div class="col-md-6">
-            <div class="card h-100 border-primary cursor-pointer" onclick="pilihMetode('manual')">
-              <div class="card-body text-center">
-                <i class="fas fa-money-bill-wave fa-3x text-primary"></i>
-                <h5 class="mt-3">Cash / Transfer / E-Wallet</h5>
+            <div class="card border-0 shadow-sm h-100 bg-light cursor-pointer hover-lift" 
+                 onclick="pilihMetode('manual')" id="card-manual">
+              <div class="card-body text-center py-5">
+                <div class="icon-circle bg-primary bg-opacity-10 text-primary mb-3 mx-auto">
+                  <i class="fas fa-money-bill-wave fa-2x"></i>
+                </div>
+                <h5 class="fw-bold">Tunai / Transfer</h5>
+                <p class="text-muted small mb-0">Cash, Transfer Bank, E-Wallet</p>
               </div>
             </div>
           </div>
+
+          <!-- QRIS Midtrans -->
           <div class="col-md-6">
-            <div class="card h-100 border-success cursor-pointer" onclick="pilihMetode('qris')">
-              <div class="card-body text-center">
-                <i class="fas fa-qrcode fa-3x text-success"></i>
-                <h5 class="mt-3">Bayar dengan QRIS (Midtrans)</h5>
+            <div class="card border-0 shadow-sm h-100 bg-light cursor-pointer hover-lift" 
+                 onclick="pilihMetode('qris')" id="card-qris">
+              <div class="card-body text-center py-5">
+                <div class="icon-circle bg-success bg-opacity-10 text-success mb-3 mx-auto">
+                  <i class="fas fa-qrcode fa-2x"></i>
+                </div>
+                <h5 class="fw-bold">QRIS (All Payment)</h5>
+                <p class="text-muted small mb-0">GoPay, ShopeePay, DANA, OVO, dll</p>
               </div>
             </div>
           </div>
         </div>
 
         <!-- Form Manual -->
-        <div id="formManual" style="display:none;">
+        <div id="formManual" class="mt-4 p-4 bg-white rounded-3 border" style="display:none;">
           <form action="/server/controller/pesanan/pesananController.php" method="POST">
             <input type="hidden" name="id_pesanan" value="<?= $id_pesanan ?>">
             <input type="hidden" name="proses_bayar" value="1">
-            <input type="hidden" name="metode_bayar" value="Cash">
-            <div class="mt-3">
-              <label>Jumlah Bayar</label>
-              <input type="text" name="jumlah_bayar" class="form-control rupiah" value="<?= number_format($pesanan['total'],0,',','.'); ?>" required>
-            </div>
-            <div class="mt-3 text-end">
-              <button type="submit" class="btn btn-primary">Selesaikan Pembayaran</button>
-            </div>
-          </form>
-        </div>
 
-        <!-- Form QRIS Midtrans -->
-        <div id="formQRIS" style="display:none;">
-          <form action="/server/controller/pesanan/midtrans_snap.php" method="POST">
-            <input type="hidden" name="id_pesanan" value="<?= $id_pesanan ?>">
-            <input type="hidden" name="total" value="<?= $pesanan['total'] ?>">
-            <input type="hidden" name="nama_pelanggan" value="<?= htmlspecialchars($pesanan['nama_pelanggan']) ?>">
-            <div class="text-center">
-              <button type="submit" class="btn btn-success btn-lg">
-                <i class="fas fa-qrcode"></i> Generate QRIS
+            <div class="mb-3">
+              <label class="form-label fw-bold">Metode Pembayaran</label>
+              <select name="metode_bayar" class="form-select form-select-lg" required>
+                <option value="Cash">Cash (Tunai)</option>
+                <option value="Transfer">Transfer Bank</option>
+                <option value="E-Wallet">E-Wallet</option>
+              </select>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label fw-bold">Jumlah Dibayar</label>
+              <input type="text" name="jumlah_bayar" class="form-control form-control-lg text-end fw-bold rupiah" 
+                     value="<?= number_format($pesanan['total'],0,',','.'); ?>" required>
+            </div>
+
+            <div class="d-grid">
+              <button type="submit" class="btn btn-primary btn-lg rounded-pill">
+                <i class="fas fa-check me-2"></i> Selesaikan Pembayaran
               </button>
             </div>
           </form>
         </div>
+
+        <!-- Form QRIS -->
+        <div id="formQRIS" class="mt-4 p-4 bg-white rounded-3 border text-center" style="display:none;">
+          <form action="/server/controller/pesanan/midtrans_snap.php" method="POST">
+            <input type="hidden" name="id_pesanan" value="<?= $id_pesanan ?>">
+            <input type="hidden" name="total" value="<?= $pesanan['total'] ?>">
+            <input type="hidden" name="nama_pelanggan" value="<?= htmlspecialchars($pesanan['nama_pelanggan']) ?>">
+            <input type="hidden" name="no_meja" value="<?= $pesanan['no_meja'] ?>">
+
+            <div class="mb-4">
+              <i class="fas fa-qrcode fa-4x text-success"></i>
+              <h5 class="mt-3 fw-bold">Bayar dengan QRIS</h5>
+              <p class="text-muted">Semua e-wallet & mobile banking</p>
+            </div>
+
+            <button type="submit" class="btn btn-success btn-lg rounded-pill px-5">
+              <i class="fas fa-arrow-right me-2"></i> Lanjut ke QRIS
+            </button>
+          </form>
+        </div>
+      </div>
+
+      <div class="modal-footer border-0 justify-content-center pb-4">
+        <button type="button" class="btn btn-link text-muted" data-bs-dismiss="modal">Batal</button>
       </div>
     </div>
   </div>
 </div>
+
+<!-- Script untuk pilih metode -->
+<script>
+function pilihMetode(metode) {
+  // Reset border
+  document.getElementById('card-manual').classList.remove('border-primary', 'shadow');
+  document.getElementById('card-qris').classList.remove('border-success', 'shadow-lg');
+  
+  // Hide all forms
+  document.getElementById('formManual').style.display = 'none';
+  document.getElementById('formQRIS').style.display = 'none';
+
+  if (metode === 'manual') {
+    document.getElementById('card-manual').classList.add('border-primary', 'shadow');
+    document.getElementById('formManual').style.display = 'block';
+  } else if (metode === 'qris') {
+    document.getElementById('card-qris').classList.add('border-success', 'shadow-lg');
+    document.getElementById('formQRIS').style.display = 'block';
+  }
+}
+</script>
+
+<!-- CSS Tambahan (taruh di <head> atau file CSS) -->
+
 
   <?php include $_SERVER['DOCUMENT_ROOT'] . '/components/fixed-plugin.php'; ?>
   <script src="/assets/template/material/assets/js/core/popper.min.js"></script>
