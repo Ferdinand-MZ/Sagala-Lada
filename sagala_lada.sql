@@ -72,14 +72,23 @@ CREATE TABLE `menu` (
 --
 
 INSERT INTO `menu` (`id_menu`, `nama_menu`, `harga`, `jenis`, `gambar`) VALUES
-(1, 'Nasi Goreng Spesial', 25000.00, 'Makanan', NULL),
-(2, 'Mie Goreng Jawa', 22000.00, 'Makanan', NULL),
-(3, 'Ayam Jokowi', 38000.00, 'Makanan', '1763704834_8728.png'),
-(4, 'Sate Ayam Madura', 30000.00, 'Makanan', NULL),
-(5, 'Es Teh Manis', 8000.00, 'Minuman', NULL),
-(6, 'Jus Jeruk', 15000.00, 'Minuman', NULL),
-(7, 'Kopi Hitam', 12000.00, 'Minuman', NULL),
-(8, 'Milkshake Cokelat', 20000.00, 'Minuman', NULL);
+(1, 'Es Teler Durian', 18000.00, 'Minuman', 'Es_Teler_Durian.jpg'),
+(2, 'Es Teler Strawberry', 18000.00, 'Minuman', 'Es_Teler_Straw.jpg'),
+(3, 'Es Teler Original', 15000.00, 'Minuman', 'Es Teler Ori.jpg'),
+(4, 'Milky Mango', 12000.00, 'Minuman', 'Mango.jpg'),
+(5, 'Milky Strawberry', 13000.00, 'Minuman', 'milkystraw.jpg'),
+(6, 'Alpukat Kocok', 11000.00, 'Minuman', 'alpukat.png'),
+(7, 'Leci Yakult', 13000.00, 'Minuman', 'leci.png'),
+(8, 'Matcha', 12000.00, 'Minuman', 'matcha.png'),
+(9, 'Ayam Chili Padi', 15000.00, 'Makanan', 'ayamchilipadi.jpg'),
+(10, 'Ayam Lada Merah Kemangi', 15000.00, 'Makanan', 'Kemangi.jpg'),
+(11, 'Ikan Nila Sambal Merah', 20000.00, 'Makanan', 'nilamerah.jpg'),
+(12, 'Ikan Nila Goreng', 18000.00, 'Makanan', 'nila goreng.jpg'),
+(13, 'Pesmol Ikan Nila', 25000.00, 'Makanan', 'nila.jpg'),
+(14, 'Cumi Kuah Rica', 20000.00, 'Makanan', 'cumirica.jpg'),
+(15, 'Cobek Otak-otak', 16000.00, 'Makanan', 'cobekotak-otak.jpg'),
+(16, 'spagetti', 20000.00, 'Makanan', 'spagetti.jpg');
+
 
 -- --------------------------------------------------------
 

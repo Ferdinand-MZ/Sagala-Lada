@@ -11,7 +11,7 @@
                 <a class="btn btn-link" href="terms.php">Terms & Condition</a>
             </div> -->
             <div class="col-lg-3 col-md-6">
-                <h4 class="section-title ff-secondary text-start text-primary fw-normal mb-4">Contact</h4>
+                <h4 class="section-title ff-secondary text-start text-primary fw-normal mb-4">Kontak</h4>
                 <p class="mb-2"><i class="fa fa-map-marker-alt me-3"></i>Jln. R.A Kartini No.39 Soklat, Subang</p>
                 <p class="mb-2"><i class="fa fa-phone-alt me-3"></i>+62 812 8668 3093</p>
                 <p class="mb-2"><i class="fa fa-envelope me-3"></i>info@example.com</p>
@@ -23,11 +23,11 @@
                 </div>
             </div>
             <div class="col-lg-3 col-md-6">
-                <h4 class="section-title ff-secondary text-start text-primary fw-normal mb-4">Opening</h4>
-                <h5 class="text-light fw-normal">Tuesday - Sunday</h5>
-                <p>11.00 AM - 20.00 PM</p>
-                <h5 class="text-light fw-normal">Monday</h5>
-                <p>Close</p>
+                <h4 class="section-title ff-secondary text-start text-primary fw-normal mb-4">Buka</h4>
+                <h5 class="text-light fw-normal">Selasa - Minggu</h5>
+                <p>11.00 - 20.00 WIB</p>
+                <h5 class="text-light fw-normal">Senin</h5>
+                <p>Tutup</p>
             </div>
             <!-- <div class="col-lg-3 col-md-6">
                 <h4 class="section-title ff-secondary text-start text-primary fw-normal mb-4">Newsletter</h4>
