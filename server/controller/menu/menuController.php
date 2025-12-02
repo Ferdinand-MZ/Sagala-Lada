@@ -2,21 +2,53 @@
 session_start();
 require_once $_SERVER['DOCUMENT_ROOT'] . '/koneksi.php';
 
-// Cek login (opsional, tambahkan kalau pakai session)
-if (!isset($_SESSION['login'])) {
-    header("Location: login.php");
+// Pastikan user login
+if (!isset($_SESSION['user_id'])) {
+    header("Location: /login.php");
     exit;
 }
 
-// === HAPUS MENU ===
+$id_user = $_SESSION['user_id'];
+
+// Fungsi log
+function catatLog($koneksi, $id_user, $aktivitas, $keterangan = null) {
+    $aktivitas  = mysqli_real_escape_string($koneksi, $aktivitas);
+    $keterangan = $keterangan ? mysqli_real_escape_string($koneksi, $keterangan) : null;
+    $sql = "INSERT INTO log (id_user, aktivitas, keterangan, created_at)
+            VALUES ($id_user, '$aktivitas', ".($keterangan ? "'$keterangan'" : "NULL").", NOW())";
+    mysqli_query($koneksi, $sql);
+}
+
+// === HAPUS MENU (DENGAN LOG DETAIL LENGKAP) ===
 if (isset($_GET['hapus'])) {
     $id = (int)$_GET['hapus'];
-    $del = mysqli_query($koneksi, "DELETE FROM menu WHERE id_menu = $id");
-    if ($del) {
-        header("Location: /server/view/menu/menu.php?msg=hapus_sukses");
-    } else {
-        header("Location: /server/view/menu/menu.php?msg=hapus_gagal");
 
+    // Ambil data menu sebelum dihapus (untuk log detail)
+    $menu = mysqli_fetch_assoc(mysqli_query($koneksi, 
+        "SELECT nama_menu, jenis, harga, gambar FROM menu WHERE id_menu = $id"
+    ));
+
+    if ($menu) {
+        // Hapus file gambar jika ada
+        if (!empty($menu['gambar']) && file_exists($_SERVER['DOCUMENT_ROOT'] . '/assets/img/menu/' . $menu['gambar'])) {
+            unlink($_SERVER['DOCUMENT_ROOT'] . '/assets/img/menu/' . $menu['gambar']);
+        }
+
+        $del = mysqli_query($koneksi, "DELETE FROM menu WHERE id_menu = $id");
+
+        if ($del) {
+            catatLog($koneksi, $id_user, 'Hapus menu', 
+                "Menghapus menu: {$menu['nama_menu']} | Jenis: {$menu['jenis']} | Harga: Rp " . 
+                number_format($menu['harga'], 0, ',', '.') . " | Gambar: " . ($menu['gambar'] ?: 'tidak ada')
+            );
+            header("Location: /server/view/menu/menu.php?msg=hapus_sukses");
+        } else {
+            catatLog($koneksi, $id_user, 'Gagal hapus menu', "ID: $id (menu tidak ditemukan atau error)");
+            header("Location: /server/view/menu/menu.php?msg=hapus_gagal");
+        }
+    } else {
+        catatLog($koneksi, $id_user, 'Gagal hapus menu', "ID: $id (menu tidak ditemukan)");
+        header("Location: /server/view/menu/menu.php?msg=hapus_gagal");
     }
     exit;
 }
@@ -28,20 +60,22 @@ if (isset($_POST['tambah'])) {
     $harga = (int)preg_replace('/\D/', '', $_POST['harga']);
     $gambar = '';
 
-    // Proses upload gambar
-    if (!empty($_FILES['gambar']['name'])) {
-        $ext = pathinfo($_FILES['gambar']['name'], PATHINFO_EXTENSION);
-        $nama_file = time() . '_' . rand(1000,9999) . '.' . $ext;
-        $target = $_SERVER['DOCUMENT_ROOT'] . '/assets/img/menu/' . $nama_file;
-        
-        if (move_uploaded_file($_FILES['gambar']['tmp_name'], $target)) {
-            $gambar = $nama_file;
-        }
+    if (!empty($_FILES['gambar']['name']) && move_uploaded_file($_FILES['gambar']['tmp_name'], $target)) {
+        $gambar = $nama_file;
     }
 
     $sql = "INSERT INTO menu (nama_menu, jenis, harga, gambar) VALUES ('$nama', '$jenis', $harga, '$gambar')";
     $ok = mysqli_query($koneksi, $sql);
-    header("Location: /server/view/menu/menu.php?msg=" . ($ok ? 'tambah_sukses' : 'tambah_gagal'));
+
+    if ($ok) {
+        $id_baru = mysqli_insert_id($koneksi);
+        catatLog($koneksi, $id_user, 'Tambah menu baru', 
+            "Menambahkan: $nama | Jenis: $jenis | Harga: Rp " . number_format($harga,0,',','.'));
+        header("Location: /server/view/menu/menu.php?msg=tambah_sukses");
+    } else {
+        catatLog($koneksi, $id_user, 'Gagal tambah menu', $nama);
+        header("Location: /server/view/menu/menu.php?msg=tambah_gagal");
+    }
     exit;
 }
 
@@ -54,34 +88,35 @@ if (isset($_POST['edit'])) {
     $gambar_lama = $_POST['gambar_lama'];
     $gambar = $gambar_lama;
 
-    // Jika upload gambar baru
-    if (!empty($_FILES['gambar']['name'])) {
-        $ext = pathinfo($_FILES['gambar']['name'], PATHINFO_EXTENSION);
-        $nama_file = time() . '_' . rand(1000,9999) . '.' . $ext;
-        $target = $_SERVER['DOCUMENT_ROOT'] . '/assets/img/menu/' . $nama_file;
-        
-        if (move_uploaded_file($_FILES['gambar']['tmp_name'], $target)) {
-            // Hapus gambar lama jika ada
-            if ($gambar_lama && file_exists($_SERVER['DOCUMENT_ROOT'] . '/assets/img/menu/' . $gambar_lama)) {
-                unlink($_SERVER['DOCUMENT_ROOT'] . '/assets/img/menu/' . $gambar_lama);
-            }
-            $gambar = $nama_file;
+    $old = mysqli_fetch_assoc(mysqli_query($koneksi, "SELECT nama_menu, jenis, harga, gambar FROM menu WHERE id_menu = $id"));
+
+    if (!empty($_FILES['gambar']['name']) && move_uploaded_file($_FILES['gambar']['tmp_name'], $target)) {
+        if ($gambar_lama && file_exists($_SERVER['DOCUMENT_ROOT'].'/assets/img/menu/'.$gambar_lama)) {
+            unlink($_SERVER['DOCUMENT_ROOT'].'/assets/img/menu/'.$gambar_lama);
         }
+        $gambar = $nama_file;
     }
 
-    $sql = "UPDATE menu SET 
-            nama_menu = '$nama',
-            jenis = '$jenis',
-            harga = $harga,
-            gambar = '$gambar'
-            WHERE id_menu = $id";
-
+    $sql = "UPDATE menu SET nama_menu='$nama', jenis='$jenis', harga=$harga, gambar='$gambar' WHERE id_menu=$id";
     $ok = mysqli_query($koneksi, $sql);
-    header("Location: /server/view/menu/menu.php?msg=" . ($ok ? 'edit_sukses' : 'edit_gagal'));
+
+    if ($ok) {
+        $perubahan = [];
+        if ($old['nama_menu'] != $nama) $perubahan[] = "nama: {$old['nama_menu']} → $nama";
+        if ($old['jenis'] != $jenis)     $perubahan[] = "jenis: {$old['jenis']} → $jenis";
+        if ($old['harga'] != $harga)     $perubahan[] = "harga: Rp ".number_format($old['harga'],0,',','.')." → Rp ".number_format($harga,0,',','.');
+        if ($old['gambar'] != $gambar)   $perubahan[] = "gambar diubah";
+
+        $detail = !empty($perubahan) ? implode(' | ', $perubahan) : 'tidak ada perubahan';
+        catatLog($koneksi, $id_user, 'Edit menu', "Mengubah menu ID $id → $detail");
+        header("Location: /server/view/menu/menu.php?msg=edit_sukses");
+    } else {
+        catatLog($koneksi, $id_user, 'Gagal edit menu', "ID: $id");
+        header("Location: /server/view/menu/menu.php?msg=edit_gagal");
+    }
     exit;
 }
 
-// Kalau tidak ada aksi → redirect ke menu
 header("Location: menu.php");
 exit;
 ?>

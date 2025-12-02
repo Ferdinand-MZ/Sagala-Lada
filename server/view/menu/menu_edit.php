@@ -85,7 +85,7 @@ $data = mysqli_fetch_assoc($q);
             </div>
 
             <div class="card-body p-4">
-              <form action="/backend/controller/menuController.php" method="POST" enctype="multipart/form-data">
+              <form action="/server/controller/menu/menuController.php" method="POST" enctype="multipart/form-data">
                 <input type="hidden" name="edit" value="1">
                 <input type="hidden" name="id_menu" value="<?= $data['id_menu'] ?>">
                 <input type="hidden" name="gambar_lama" value="<?= $data['gambar'] ?>">
