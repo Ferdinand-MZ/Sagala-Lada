@@ -60,48 +60,48 @@
         <!-- Navbar & Hero End -->
 
         <!-- Service Start -->
-        <div class="container-xxl py-5">
-            <div class="container">
-                <div class="row g-4">
-                    <div class="col-lg-3 col-sm-6 wow fadeInUp" data-wow-delay="0.1s">
-                        <div class="service-item rounded pt-3">
-                            <div class="p-4">
-                                <i class="fa fa-3x fa-user-tie text-primary mb-4"></i>
-                                <h5>Dengan Koki Ahli</h5>
-                                <p>Menjadikan masakan dan minuman berkualitas setara dengan hidangan hotel</p>
-                            </div>
-                        </div>
+       <div class="container-xxl py-5">
+    <div class="container">
+        <div class="row g-4 justify-content-center">
+            <div class="col-lg-3 col-md-6 col-sm-6 wow fadeInUp" data-wow-delay="0.1s">
+                <div class="service-item rounded pt-3 h-100 d-flex flex-column">
+                    <div class="p-4 text-center flex-grow-1">
+                        <i class="fa fa-3x fa-user-tie text-primary mb-4"></i>
+                        <h5 class="mb-3">Koki Ahli</h5>
+                        <p class="mb-0">Masakan & minuman berkualitas setara hotel bintang</p>
                     </div>
-                    <div class="col-lg-3 col-sm-6 wow fadeInUp" data-wow-delay="0.3s">
-                        <div class="service-item rounded pt-3">
-                            <div class="p-4">
-                                <i class="fa fa-3x fa-utensils text-primary mb-4"></i>
-                                <h5>Kualitas</h5>
-                                <p>Menjamin kualitas makanan  </p>
-                            </div>
-                        </div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6 col-sm-6 wow fadeInUp" data-wow-delay="0.3s">
+                <div class="service-item rounded pt-3 h-100 d-flex flex-column">
+                    <div class="p-4 text-center flex-grow-1">
+                        <i class="fa fa-3x fa-utensils text-primary mb-4"></i>
+                        <h5 class="mb-3">Kualitas Terjamin</h5>
+                        <p class="mb-0">Setiap hidangan dijaga kualitasnya dengan standar tinggi</p>
                     </div>
-                    <div class="col-lg-3 col-sm-6 wow fadeInUp" data-wow-delay="0.5s">
-                        <div class="service-item rounded pt-3">
-                            <div class="p-4">
-                                <i class="fa fa-3x fa-cart-plus text-primary mb-4"></i>
-                                <h5>Pemesanan Online</h5>
-                                <p>Tersedia juga untuk pemesanan online dari aplikasi grab, gojek dan shopeefood</p>
-                            </div>
-                        </div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6 col-sm-6 wow fadeInUp" data-wow-delay="0.5s">
+                <div class="service-item rounded pt-3 h-100 d-flex flex-column">
+                    <div class="p-4 text-center flex-grow-1">
+                        <i class="fa fa-3x fa-cart-plus text-primary mb-4"></i>
+                        <h5 class="mb-3">Pesan Online</h5>
+                        <p class="mb-0">Tersedia di GrabFood, GoFood & ShopeeFood</p>
                     </div>
-                    <div class="col-lg-3 col-sm-6 wow fadeInUp" data-wow-delay="0.7s">
-                        <div class="service-item rounded pt-3">
-                            <div class="p-4">
-                                <i class="fa fa-3x fa-headset text-primary mb-4"></i>
-                                <h5>Buka dari jam 11.00 - 20.00 wib </h5>
-                                <p>Temukan kelezatan rasa khas Sagala Lada dalam setiap hidangan dan minuman yang kami sajikan untuk Anda</p>
-                            </div>
-                        </div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6 col-sm-6 wow fadeInUp" data-wow-delay="0.7s">
+                <div class="service-item rounded pt-3 h-100 d-flex flex-column">
+                    <div class="p-4 text-center flex-grow-1">
+                        <i class="fa fa-3x fa-clock text-primary mb-4"></i>
+                        <h5 class="mb-3">Buka 11.00 - 20.00 WIB</h5>
+                        <p class="mb-0">Nikmati kelezatan khas Sagala Lada setiap hari</p>
                     </div>
                 </div>
             </div>
         </div>
+    </div>
+</div>  
         <!-- Service End -->
 
         <!-- About Start -->
@@ -126,7 +126,7 @@
                     </div>
                     <div class="col-lg-6">
                         <h5 class="section-title ff-secondary text-start text-primary fw-normal">Tentang Kami</h5>
-                        <h1 class="mb-4">Selamat Datang di<i class="fa fa-utensils text-primary me-2"></i>Sagala Lada</h1>
+                        <h1 class="mb-4">Selamat Datang di </i>Sagala Lada</h1>
                         <p class="mb-4">Sagala Lada adalah UMKM makanan yang menghadirkan olahan rempah dengan cita rasa khas Nusantara. Setiap produk dibuat dari bahan segar dan berkualitas.</p>
                         <p class="mb-4">Setiap proses produksi dilakukan secara higienis dan ramah lingkungan, sehingga tidak hanya menjaga kualitas rasa, tetapi juga mendukung keberlanjutan. Kami berkomitmen menghadirkan pengalaman kuliner terbaik melalui inovasi dan penggunaan bahan-bahan alami pilihan.</p>
                         <div class="row g-4 mb-4">
@@ -246,7 +246,7 @@
         <!-- End Menu Dinamis -->
 
         <!-- Reservation Start -->
-        <div class="container-xxl py-5 px-0 wow fadeInUp" data-wow-delay="0.1s">
+        <!-- <div class="container-xxl py-5 px-0 wow fadeInUp" data-wow-delay="0.1s">
             <div class="row g-0">
                 <div class="col-md-6">
                     <div class="video">
@@ -303,7 +303,7 @@
                     </div>
                 </div>
             </div>
-        </div>
+        </div> -->
 
         <div class="modal fade" id="videoModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
             <div class="modal-dialog">

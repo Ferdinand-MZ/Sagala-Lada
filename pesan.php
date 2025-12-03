@@ -116,7 +116,7 @@ if (isset($_GET['kosongkan'])) {
                                             <button type="button" class="btn btn-outline-secondary qty-btn" onclick="this.parentNode.querySelector('input[type=number]').stepDown()">−</button>
                                             <input type="number" name="jumlah" value="1" min="1" class="form-control text-center">
                                             <button type="button" class="btn btn-outline-secondary qty-btn" onclick="this.parentNode.querySelector('input[type=number]').stepUp()">+</button>
-                                            <button type="submit" name="tambah_ke_keranjang" class="btn btn-primary ms-2">Add</button>
+                                            <button type="submit" name="tambah_ke_keranjang" class="btn btn-primary ms-2">add</button>
                                         </div>
                                     </form>
                                 </div>
