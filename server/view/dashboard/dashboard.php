@@ -361,139 +361,89 @@ $panah_menu = $persen_menu >= 0 ? '↑' : '↓';
         </div>
 
       <!-- LOG AKTIVITAS & AI INSIGHT -->
-      <div class="row mt-4">
-  <!-- LOG AKTIVITAS – Tampilkan KETERANGAN sebagai kolom utama -->
-  <div class="col-lg-7 mb-4">
-    <div class="card h-100 shadow-sm">
-      <div class="card-header pb-0">
-        <h6 class="mb-1">Log Aktivitas Terbaru</h6>
-        <p class="text-sm text-secondary mb-0">10 aktivitas terakhir (detail perubahan)</p>
-      </div>
-      <div class="card-body p-0">
-        <div class="table-responsive" style="max-height: 460px;">
-          <table class="table align-items-center mb-0">
-            <thead class="sticky-top bg-white">
-              <tr>
-                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-3">No</th>
-                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">User</th>
-                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Role</th>
-                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Keterangan</th>
-                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-end pe-4">Waktu</th>
-              </tr>
-            </thead>
-            <tbody>
-              <?php
-              $query = "SELECT 
-                          u.username,
-                          u.role,
-                          l.keterangan,
-                          DATE_FORMAT(l.created_at, '%d/%m %H:%i') AS tanggal
-                        FROM log l
-                        JOIN user u ON l.id_user = u.id_user
-                        WHERE l.keterangan IS NOT NULL
-                        ORDER BY l.created_at DESC
-                        LIMIT 10";
+          <div class="row mt-4">
+          <div class="col-12">
+            <div class="card border-0 text-dark shadow-lg" 
+                style="background: linear-gradient(135deg, #FDF4E0 0%, #FEF3C7 100%); border-radius: 1.2rem;">
+              <div class="card-body p-4">
+                <div class="d-flex justify-content-between align-items-start mb-3">
+                  <div class="d-flex align-items-center">
+                    <i class="material-symbols-rounded me-3 text-warning" style="font-size: 38px;">smart_toy</i>
+                    <h5 class="mb-0 fw-bold text-dark">AI Insight Hari Ini</h5>
+                  </div>
 
-              $log = mysqli_query($koneksi, $query);
-              $no = 1;
-              while ($r = mysqli_fetch_assoc($log)) : ?>
-                <tr>
-                  <td class="ps-3"><span class="text-xs font-weight-bold"><?= $no++ ?></span></td>
-                  <td><p class="text-xs font-weight-bold mb-0"><?= htmlspecialchars($r['username']) ?></p></td>
-                  <td>
-                    <span class="badge badge-sm <?= $r['role'] === 'owner' ? 'bg-gradient-danger' : 'bg-gradient-success' ?>">
-                      <?= ucfirst($r['role']) ?>
-                    </span>
-                  </td>
-                  <td class="text-start">
-                    <span class="text-xs text-wrap" style="max-width: 320px; display: inline-block; line-height: 1.5;">
-                      <?= $r['keterangan'] ? htmlspecialchars($r['keterangan']) : '<em class="text-muted">–</em>' ?>
-                    </span>
-                  </td>
-                  <td class="text-end pe-4"><span class="text-xs text-muted"><?= $r['tanggal'] ?></span></td>
-                </tr>
-              <?php endwhile; ?>
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-  </div>
+                  <!-- Tombol Download Laporan -->
+                  <a href="/server/controller/laporan_bulanan.php" target="_blank" 
+                    class="btn btn-warning shadow-sm d-flex align-items-center px-3">
+                      <i class="material-symbols-rounded me-1" style="font-size:20px;">download</i>
+                      <span class="d-none d-sm-inline">Download Laporan Bulanan</span>
+                  </a>
+                </div>
+                <?php
+                $cache_file = __DIR__.'/cache/ai_insight.json';
+                $cache_time = 600;
 
-  <!-- AI INSIGHT (tetap rapi) -->
-  <div class="col-lg-5 mb-4">
-    <div class="card h-100 bg-gradient-info text-white border-radius-xl shadow-lg">
-      <div class="card-body p-4">
-        <div class="d-flex align-items-center mb-3">
-          <i class="material-symbols-rounded me-3" style="font-size: 38px;">smart_toy</i>
-          <h5 class="mb-0 fw-bold">AI Insight Hari Ini</h5>
-        </div>
+                if (file_exists($cache_file) && (time() - filemtime($cache_file)) < $cache_time && filesize($cache_file) > 10) {
+                    $insight = file_get_contents($cache_file);
+                } else {
+                    $insight = "Hari ini penjualan Rp ".number_format($total_penjualan_hari_ini,0,',','.')." dari $total_pelanggan_hari_ini pelanggan. Menu terlaris: ".($menu_terlaris['nama_menu']??'–').".";
 
-        <?php
-        $cache_file = __DIR__.'/cache/ai_insight.json';
-        $cache_time = 600;
+                    if (!empty($_ENV['GROQ_API_KEY'])) {
+                        $data = json_encode([
+                            "model" => "llama3-70b-8192",
+                            "messages" => [[
+                                "role" => "user",
+                                "content" => "Dalam 2 kalimat santai bahasa Indonesia: Hari $hari_ini_nama, penjualan Rp ".number_format($total_penjualan_hari_ini,0,',','.').", $total_pelanggan_hari_ini pelanggan, menu terlaris ".($menu_terlaris['nama_menu']??'tidak ada')."."
+                            ]],
+                            "max_tokens" => 120
+                        ]);
 
-        if (file_exists($cache_file) && (time() - filemtime($cache_file)) < $cache_time && filesize($cache_file) > 10) {
-            $insight = file_get_contents($cache_file);
-        } else {
-            $insight = "Hari ini penjualan Rp ".number_format($total_penjualan_hari_ini,0,',','.')." dari $total_pelanggan_hari_ini pelanggan. Menu terlaris: ".($menu_terlaris['nama_menu']??'–').".";
+                        $ch = curl_init("https://api.groq.com/openai/v1/chat/completions");
+                        curl_setopt_array($ch, [
+                            CURLOPT_RETURNTRANSFER => true,
+                            CURLOPT_POST => true,
+                            CURLOPT_POSTFIELDS => $data,
+                            CURLOPT_HTTPHEADER => [
+                                "Authorization: Bearer ".$_ENV['GROQ_API_KEY'],
+                                "Content-Type: application/json"
+                            ],
+                            CURLOPT_TIMEOUT => 10
+                        ]);
 
-            if (!empty($_ENV['GROQ_API_KEY'])) {
-                $data = json_encode([
-                    "model" => "llama3-70b-8192",
-                    "messages" => [[
-                        "role" => "user",
-                        "content" => "Dalam 2 kalimat santai bahasa Indonesia: Hari $hari_ini_nama, penjualan Rp ".number_format($total_penjualan_hari_ini,0,',','.').", $total_pelanggan_hari_ini pelanggan, menu terlaris ".($menu_terlaris['nama_menu']??'tidak ada')."."
-                    ]],
-                    "max_tokens" => 120
-                ]);
+                        $resp = curl_exec($ch);
+                        if ($resp && ($json = json_decode($resp, true)) && isset($json['choices'][0]['message']['content'])) {
+                            $insight = trim($json['choices'][0]['message']['content']);
+                        }
+                        curl_close($ch);
 
-                $ch = curl_init("https://api.groq.com/openai/v1/chat/completions");
-                curl_setopt_array($ch, [
-                    CURLOPT_RETURNTRANSFER => true,
-                    CURLOPT_POST => true,
-                    CURLOPT_POSTFIELDS => $data,
-                    CURLOPT_HTTPHEADER => [
-                        "Authorization: Bearer ".$_ENV['GROQ_API_KEY'],
-                        "Content-Type: application/json"
-                    ],
-                    CURLOPT_TIMEOUT => 10
-                ]);
-
-                $resp = curl_exec($ch);
-                if ($resp && ($json = json_decode($resp, true)) && isset($json['choices'][0]['message']['content'])) {
-                    $insight = trim($json['choices'][0]['message']['content']);
+                        @mkdir(dirname($cache_file), 0755, true);
+                        file_put_contents($cache_file, $insight);
+                    }
                 }
-                curl_close($ch);
+                ?>
 
-                @mkdir(dirname($cache_file), 0755, true);
-                file_put_contents($cache_file, $insight);
-            }
-        }
-        ?>
+                <p class="mb-0 text-dark" style="font-size: 1.05rem; line-height: 1.7;">
+                  <?= nl2br(htmlspecialchars($insight)) ?>
+                </p>
 
-        <p class="mb-0" style="font-size: 1.05rem; line-height: 1.7;">
-          <?= nl2br(htmlspecialchars($insight)) ?>
-        </p>
+                <hr class="horizontal my-4" style="border-color: #EAB308; opacity: 0.4;">
 
-        <hr class="horizontal light my-4">
-
-        <div class="d-flex justify-content-between align-items-end text-sm opacity-9">
-          <div>
-            <small>Prediksi besok</small><br>
-            <strong class="text-lg">Rp <?= number_format(round(array_sum($values)/7 * 1.1), 0, ',', '.') ?></strong>
-          </div>
-          <div class="text-end">
-            <small>Hari ini</small><br>
-            <strong><?= $hari_ini_nama ?>, <?= date('d/m/Y') ?></strong>
+                <div class="d-flex justify-content-between align-items-end text-dark opacity-9">
+                  <div>
+                    <small class="text-muted">Prediksi besok</small><br>
+                    <strong class="text-lg">Rp <?= number_format(round(array_sum($values)/7 * 1.1), 0, ',', '.') ?></strong>
+                  </div>
+                  <div class="text-end">
+                    <small class="text-muted">Hari ini</small><br>
+                    <strong><?= $hari_ini_nama ?>, <?= date('d/m/Y') ?></strong>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
-    </div>
-  </div>
-</div>
-      </div>
-    </main>
+     </main>
       </div>
     </div>
   </main>

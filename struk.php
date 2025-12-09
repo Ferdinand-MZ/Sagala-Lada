@@ -18,6 +18,7 @@ if (!$pesanan) {
     <link href="assets/template/restoran/css/bootstrap.min.css" rel="stylesheet">
     <link href="assets/template/restoran/css/style.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+    
 </head>
 <body class="bg-light">
 
@@ -75,6 +76,31 @@ if (!$pesanan) {
         </div>
     </div>
 <?php endif; ?>
+
+<?php if ($pesanan['status'] === 'Selesai'): ?>
+    <!-- Versi Selesai -->
+    <div class="text-center mt-4">
+        <button onclick="window.print()" class="btn btn-outline-success btn-lg px-5 py-3">
+            <i class="fa fa-download me-2"></i> Download Struk PDF
+        </button>
+    </div>
+
+<?php else: ?>
+    <!-- Versi Pending -->
+    <div class="text-center mt-3">
+        <button onclick="window.print()" class="btn btn-outline-primary">
+            <i class="fa fa-download me-2"></i> Download Struk
+        </button>
+    </div>
+<?php endif; ?>
+
+<style>
+    @media print {
+        body { background: white; }
+        .no-print, .back-to-top { display: none !important; }
+        .container { max-width: 100%; }
+    }
+</style>
 
 </body>
 </html>

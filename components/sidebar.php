@@ -72,6 +72,14 @@ $is_admin = $role === 'admin';
           <span class="nav-link-text ms-1">Pengguna</span>
         </a>
       </li>
+
+       <li class="nav-item">
+        <a class="nav-link <?= ($page == 'log' ? 'active bg-gradient-dark text-white' : 'text-dark') ?>" 
+           href="/server/view/log/log.php">
+          <i class="material-symbols-rounded opacity-5">history</i>
+          <span class="nav-link-text ms-1">Log</span>
+        </a>
+      </li>
       <?php endif; ?>
 
       <!-- PENGATURAN AKUN – SEMUA ROLE -->
